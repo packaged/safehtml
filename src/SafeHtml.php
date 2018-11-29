@@ -3,7 +3,7 @@ namespace Packaged\SafeHtml;
 
 use Packaged\Helpers\Strings;
 
-final class SafeHtml
+class SafeHtml
 {
   private $content;
 
