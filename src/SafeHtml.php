@@ -38,22 +38,22 @@ class SafeHtml
   }
 
   /**
-   * @param        $string
+   * @param        $input
    * @param string $arrayGlue
    *
-   * @return SafeHtml|SafeHtml[]|string
+   * @return SafeHtml
    * @throws \Exception
    */
-  public static function escape($string, $arrayGlue = ' ')
+  public static function escape($input, $arrayGlue = ' ')
   {
-    if($string instanceof SafeHtml)
+    if($input instanceof SafeHtml)
     {
-      return $string;
+      return $input;
     }
 
-    if($string instanceof ISafeHtmlProducer)
+    if($input instanceof ISafeHtmlProducer)
     {
-      $result = $string->produceSafeHTML();
+      $result = $input->produceSafeHTML();
       if($result instanceof SafeHtml)
       {
         return $result;
@@ -70,7 +70,7 @@ class SafeHtml
       }
       catch(\Exception $ex)
       {
-        $class = get_class($string);
+        $class = get_class($input);
         throw new \Exception(
           "Object (of class '{$class}') implements " .
           "ISafeHTMLProducer but did not return anything " .
@@ -79,12 +79,12 @@ class SafeHtml
       }
     }
 
-    if(is_array($string))
+    if(is_array($input))
     {
-      return implode($arrayGlue, array_map([SafeHtml::class, 'escape'], $string));
+      return new static(implode($arrayGlue, array_map([SafeHtml::class, 'escape'], $input)));
     }
 
-    return \htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
+    return new static(\htmlspecialchars($input, ENT_QUOTES, 'UTF-8'));
   }
 
   /**
