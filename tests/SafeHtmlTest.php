@@ -44,7 +44,7 @@ class SafeHtmlTest extends TestCase
     $mockBird = new MockSafeHtmlProducer();
     $mockBird->setContent('second coming');
     $mock->setContent($mockBird);
-    $this->assertSame('second coming', SafeHtml::escape($mock));
+    $this->assertEquals('second coming', SafeHtml::escape($mock));
 
     $mock->setContent(new \stdClass());
     $this->expectException(\Exception::class);
