@@ -34,11 +34,11 @@ class SafeHtmlTest extends TestCase
     $mock->setContent([$escaped, $theGreateEscape]);
     $this->assertEquals(
       'escapedContent escapedGreatness',
-      SafeHtml::escape($mock)
+      SafeHtml::escape($mock->getContent())
     );
     $this->assertEquals(
       'escapedContent,escapedGreatness',
-      SafeHtml::escape($mock, ',')
+      SafeHtml::escape($mock->getContent(), ',')
     );
 
     $mockBird = new MockSafeHtmlProducer();
@@ -46,9 +46,8 @@ class SafeHtmlTest extends TestCase
     $mock->setContent($mockBird);
     $this->assertEquals('second coming', SafeHtml::escape($mock));
 
-    $mock->setContent(new \stdClass());
     $this->expectException(\Exception::class);
-    SafeHtml::escape($mock);
+    SafeHtml::escape(new \stdClass());
   }
 
   public function testEscapeGlue()

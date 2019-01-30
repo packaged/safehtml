@@ -4,7 +4,7 @@ namespace Packaged\SafeHtml;
 interface ISafeHtmlProducer
 {
   /**
-   * @return SafeHtml|SafeHtml[]
+   * @return SafeHtml
    */
-  public function produceSafeHTML();
+  public function produceSafeHTML(): SafeHtml;
 }

@@ -51,40 +51,30 @@ class SafeHtml
       return $input;
     }
 
-    if($input instanceof ISafeHtmlProducer)
-    {
-      $result = $input->produceSafeHTML();
-      if($result instanceof SafeHtml)
-      {
-        return $result;
-      }
-      else if(is_array($result) || $result instanceof ISafeHtmlProducer)
-      {
-        return self::escape($result, $arrayGlue);
-      }
-
-      try
-      {
-        Strings::stringable($result);
-        return self::escape((string)$result);
-      }
-      catch(\Exception $ex)
-      {
-        $class = get_class($input);
-        throw new \Exception(
-          "Object (of class '{$class}') implements " .
-          "ISafeHTMLProducer but did not return anything " .
-          "renderable from produceSafeHTML()."
-        );
-      }
-    }
-
     if(is_array($input))
     {
       return new static(implode($arrayGlue, array_map([SafeHtml::class, 'escape'], $input)));
     }
 
-    return new static(\htmlspecialchars($input, ENT_QUOTES, 'UTF-8'));
+    if($input instanceof ISafeHtmlProducer)
+    {
+      return $input->produceSafeHTML();
+    }
+
+    try
+    {
+      Strings::stringable($input);
+      return new static(\htmlspecialchars($input, ENT_QUOTES, 'UTF-8'));
+    }
+    catch(\Exception $ex)
+    {
+      $class = get_class($input);
+      throw new \Exception(
+        "Object (of class '{$class}') implements " .
+        "ISafeHTMLProducer but did not return anything " .
+        "renderable from produceSafeHTML()."
+      );
+    }
   }
 
   /**

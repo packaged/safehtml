@@ -13,11 +13,17 @@ class MockSafeHtmlProducer implements ISafeHtmlProducer
     $this->_content = $content;
   }
 
-  /**
-   * @return SafeHtml|SafeHtml[]
-   */
-  public function produceSafeHTML()
+  public function getContent()
   {
     return $this->_content;
+  }
+
+  /**
+   * @return SafeHtml
+   * @throws \Exception
+   */
+  public function produceSafeHTML(): SafeHtml
+  {
+    return SafeHtml::escape($this->_content);
   }
 }
