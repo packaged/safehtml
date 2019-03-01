@@ -53,7 +53,12 @@ class SafeHtml
 
     if(is_array($input))
     {
-      return new static(implode($arrayGlue, array_map([SafeHtml::class, 'escape'], $input)));
+      return new static(
+        implode(
+          $arrayGlue,
+          array_map(function ($input) use ($arrayGlue) { return SafeHtml::escape($input, $arrayGlue); }, $input)
+        )
+      );
     }
 
     if($input instanceof ISafeHtmlProducer)
