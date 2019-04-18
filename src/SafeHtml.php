@@ -23,14 +23,14 @@ class SafeHtml
   }
 
   /**
-   * @param $html
+   * @param ...$toAppend
    *
    * @return $this
    * @throws \Exception
    */
-  public function append($html /* , ... */)
+  public function append(...$toAppend)
   {
-    foreach(func_get_args() as $html)
+    foreach($toAppend as $html)
     {
       $this->content .= self::escape($html);
     }
@@ -104,7 +104,7 @@ class SafeHtml
    * infix URI components, use @{function:phutil_escape_uri_path_component}
    * instead.
    *
-   * @param   string $string Some string.
+   * @param string $string Some string.
    *
    * @return  string  URI encoded string, except for '/'.
    */
@@ -128,7 +128,7 @@ class SafeHtml
    *                                                the
    * application.
    *
-   * @param   string $string Some string.
+   * @param string $string Some string.
    *
    * @return  string  URI encoded string that is safe for infix composition.
    */
