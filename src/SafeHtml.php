@@ -58,12 +58,12 @@ class SafeHtml
 
     if(is_array($input))
     {
-      $return = [];
+      $return = '';
       foreach($input as $iv)
       {
-        $return[] = static::escape($iv, $arrayGlue);
+        $return .= $arrayGlue . static::escape($iv, $arrayGlue)->getContent();
       }
-      return new static(implode($arrayGlue, $return));
+      return new static(ltrim($return, $arrayGlue));
     }
 
     try
@@ -73,11 +73,7 @@ class SafeHtml
     }
     catch(\Exception $ex)
     {
-      throw new \Exception(
-        "Object (of class '" . get_class($input) . "') implements " .
-        "ISafeHTMLProducer but did not return anything " .
-        "renderable from produceSafeHTML()."
-      );
+      throw new \Exception("Object (of class '" . get_class($input) . "') cannot be converted to SafeHtml.");
     }
   }
 
