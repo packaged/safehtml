@@ -23,16 +23,16 @@ class SafeHtml
   }
 
   /**
-   * @param ...$toAppend
+   * @param $html
    *
    * @return $this
    * @throws \Exception
    */
-  public function append(...$toAppend)
+  public function append(...$html)
   {
-    foreach($toAppend as $html)
+    foreach($html as $toAppend)
     {
-      $this->content .= self::escape($html);
+      $this->content .= self::escape($toAppend);
     }
     return $this;
   }
@@ -51,19 +51,14 @@ class SafeHtml
       return $input;
     }
 
-    if(is_array($input))
-    {
-      return new static(
-        implode(
-          $arrayGlue,
-          array_map(function ($input) use ($arrayGlue) { return SafeHtml::escape($input, $arrayGlue); }, $input)
-        )
-      );
-    }
-
     if($input instanceof ISafeHtmlProducer)
     {
       return $input->produceSafeHTML();
+    }
+
+    if(is_array($input))
+    {
+      return new static(implode($arrayGlue, array_map([SafeHtml::class, 'escape'], $input, [$arrayGlue])));
     }
 
     try
@@ -73,9 +68,8 @@ class SafeHtml
     }
     catch(\Exception $ex)
     {
-      $class = get_class($input);
       throw new \Exception(
-        "Object (of class '{$class}') implements " .
+        "Object (of class '" . get_class($input) . "') implements " .
         "ISafeHTMLProducer but did not return anything " .
         "renderable from produceSafeHTML()."
       );
