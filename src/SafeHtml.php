@@ -58,7 +58,7 @@ class SafeHtml
 
     if(is_array($input))
     {
-      return new static(implode($arrayGlue, array_map([SafeHtml::class, 'escape'], $input, [$arrayGlue])));
+      return new static(implode($arrayGlue, array_map([static::class, 'escape'], $input, [$arrayGlue])));
     }
 
     try
