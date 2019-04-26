@@ -1,7 +1,16 @@
 <?php
 namespace Packaged\SafeHtml;
 
+use Exception;
 use Packaged\Helpers\Strings;
+use function get_class;
+use function htmlspecialchars;
+use function is_array;
+use function ltrim;
+use function rawurldecode;
+use function rawurlencode;
+use function str_replace;
+use const ENT_QUOTES;
 
 class SafeHtml implements ISafeHtmlProducer
 {
@@ -10,71 +19,6 @@ class SafeHtml implements ISafeHtmlProducer
   public function __construct($content)
   {
     $this->content = (string)$content;
-  }
-
-  public function __toString()
-  {
-    return $this->content;
-  }
-
-  public function getContent()
-  {
-    return $this->content;
-  }
-
-  /**
-   * @param $html
-   *
-   * @return $this
-   * @throws \Exception
-   */
-  public function append(...$html)
-  {
-    foreach($html as $toAppend)
-    {
-      $this->content .= self::escape($toAppend);
-    }
-    return $this;
-  }
-
-  /**
-   * @param        $input
-   * @param string $arrayGlue
-   *
-   * @return SafeHtml
-   * @throws \Exception
-   */
-  public static function escape($input, $arrayGlue = ' ')
-  {
-    if($input instanceof SafeHtml)
-    {
-      return $input;
-    }
-
-    if($input instanceof ISafeHtmlProducer)
-    {
-      return $input->produceSafeHTML();
-    }
-
-    if(\is_array($input))
-    {
-      $return = '';
-      foreach($input as $iv)
-      {
-        $return .= $arrayGlue . static::escape($iv, $arrayGlue)->getContent();
-      }
-      return new static(\ltrim($return, $arrayGlue));
-    }
-
-    try
-    {
-      Strings::stringable($input);
-      return new static(\htmlspecialchars($input, ENT_QUOTES, 'UTF-8'));
-    }
-    catch(\Exception $ex)
-    {
-      throw new \Exception("Object (of class '" . \get_class($input) . "') cannot be converted to SafeHtml.");
-    }
   }
 
   /**
@@ -105,7 +49,7 @@ class SafeHtml implements ISafeHtmlProducer
    */
   public static function escapeUri($string)
   {
-    return \str_replace('%2F', '/', \rawurlencode($string));
+    return str_replace('%2F', '/', rawurlencode($string));
   }
 
   /**
@@ -129,7 +73,7 @@ class SafeHtml implements ISafeHtmlProducer
    */
   public static function escapeUriPathComponent($string)
   {
-    return \rawurlencode(\rawurlencode($string));
+    return rawurlencode(rawurlencode($string));
   }
 
   /**
@@ -150,7 +94,72 @@ class SafeHtml implements ISafeHtmlProducer
    */
   public static function unescapeUriPathComponent($string)
   {
-    return \rawurldecode($string);
+    return rawurldecode($string);
+  }
+
+  public function __toString()
+  {
+    return $this->content;
+  }
+
+  /**
+   * @param $html
+   *
+   * @return $this
+   * @throws Exception
+   */
+  public function append(...$html)
+  {
+    foreach($html as $toAppend)
+    {
+      $this->content .= self::escape($toAppend);
+    }
+    return $this;
+  }
+
+  /**
+   * @param        $input
+   * @param string $arrayGlue
+   *
+   * @return SafeHtml
+   * @throws Exception
+   */
+  public static function escape($input, $arrayGlue = ' ')
+  {
+    if($input instanceof SafeHtml)
+    {
+      return $input;
+    }
+
+    if($input instanceof ISafeHtmlProducer)
+    {
+      return $input->produceSafeHTML();
+    }
+
+    if(is_array($input))
+    {
+      $return = '';
+      foreach($input as $iv)
+      {
+        $return .= $arrayGlue . static::escape($iv, $arrayGlue)->getContent();
+      }
+      return new static(ltrim($return, $arrayGlue));
+    }
+
+    try
+    {
+      Strings::stringable($input);
+      return new static(htmlspecialchars($input, ENT_QUOTES, 'UTF-8'));
+    }
+    catch(Exception $ex)
+    {
+      throw new Exception("Object (of class '" . get_class($input) . "') cannot be converted to SafeHtml.");
+    }
+  }
+
+  public function getContent()
+  {
+    return $this->content;
   }
 
   public function produceSafeHTML(): SafeHtml
