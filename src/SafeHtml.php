@@ -3,7 +3,7 @@ namespace Packaged\SafeHtml;
 
 use Packaged\Helpers\Strings;
 
-class SafeHtml
+class SafeHtml implements ISafeHtmlProducer
 {
   private $content;
 
@@ -151,5 +151,10 @@ class SafeHtml
   public static function unescapeUriPathComponent($string)
   {
     return rawurldecode($string);
+  }
+
+  public function produceSafeHTML(): SafeHtml
+  {
+    return $this;
   }
 }
