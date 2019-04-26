@@ -56,14 +56,14 @@ class SafeHtml implements ISafeHtmlProducer
       return $input->produceSafeHTML();
     }
 
-    if(is_array($input))
+    if(\is_array($input))
     {
       $return = '';
       foreach($input as $iv)
       {
         $return .= $arrayGlue . static::escape($iv, $arrayGlue)->getContent();
       }
-      return new static(ltrim($return, $arrayGlue));
+      return new static(\ltrim($return, $arrayGlue));
     }
 
     try
@@ -73,7 +73,7 @@ class SafeHtml implements ISafeHtmlProducer
     }
     catch(\Exception $ex)
     {
-      throw new \Exception("Object (of class '" . get_class($input) . "') cannot be converted to SafeHtml.");
+      throw new \Exception("Object (of class '" . \get_class($input) . "') cannot be converted to SafeHtml.");
     }
   }
 
@@ -105,7 +105,7 @@ class SafeHtml implements ISafeHtmlProducer
    */
   public static function escapeUri($string)
   {
-    return str_replace('%2F', '/', rawurlencode($string));
+    return \str_replace('%2F', '/', \rawurlencode($string));
   }
 
   /**
@@ -129,7 +129,7 @@ class SafeHtml implements ISafeHtmlProducer
    */
   public static function escapeUriPathComponent($string)
   {
-    return rawurlencode(rawurlencode($string));
+    return \rawurlencode(\rawurlencode($string));
   }
 
   /**
@@ -150,7 +150,7 @@ class SafeHtml implements ISafeHtmlProducer
    */
   public static function unescapeUriPathComponent($string)
   {
-    return rawurldecode($string);
+    return \rawurldecode($string);
   }
 
   public function produceSafeHTML(): SafeHtml
