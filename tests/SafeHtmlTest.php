@@ -2,6 +2,7 @@
 namespace Packaged\Tests\SafeHtml;
 
 use Packaged\SafeHtml\SafeHtml;
+use Packaged\SafeHtml\SafeHtmlEscape;
 use PHPUnit\Framework\TestCase;
 
 class SafeHtmlTest extends TestCase
@@ -60,12 +61,20 @@ class SafeHtmlTest extends TestCase
   {
     $this->assertEquals(
       '%2B/%20%3F%23%26%3A%21xyz%25',
+      SafeHtmlEscape::uri('+/ ?#&:!xyz%')
+    );
+    $this->assertEquals(
+      '%2B/%20%3F%23%26%3A%21xyz%25',
       SafeHtml::escapeUri('+/ ?#&:!xyz%')
     );
   }
 
   public function testURIPathComponentEscape()
   {
+    $this->assertEquals(
+      'a%252Fb',
+      SafeHtmlEscape::uriPathComponent('a/b')
+    );
     $this->assertEquals(
       'a%252Fb',
       SafeHtml::escapeUriPathComponent('a/b')
@@ -79,11 +88,32 @@ class SafeHtmlTest extends TestCase
 
     $this->assertEquals(
       $str,
+      SafeHtmlEscape::unescapeUriPathComponent(
+        rawurldecode( // Simulates webserver.
+          SafeHtmlEscape::uriPathComponent($str)
+        )
+      )
+    );
+
+    $this->assertEquals(
+      $str,
       SafeHtml::unescapeUriPathComponent(
         rawurldecode( // Simulates webserver.
-          SafeHtml::escapeUriPathComponent($str)
+          SafeHtmlEscape::uriPathComponent($str)
         )
       )
     );
   }
+
+  public function testCallStatic()
+  {
+    $this->assertNull(SafeHtml::invalid());
+  }
+
+  public function testProduce()
+  {
+    $html = new SafeHtml('PROD');
+    $this->assertSame($html, $html->produceSafeHTML());
+  }
+
 }
