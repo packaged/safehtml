@@ -70,6 +70,11 @@ class SafeHtml implements ISafeHtmlProducer
    */
   public static function escape($input, $arrayGlue = ' ')
   {
+    if($input === null)
+    {
+      return new static('');
+    }
+
     if($input instanceof SafeHtml)
     {
       return $input;
@@ -85,6 +90,10 @@ class SafeHtml implements ISafeHtmlProducer
       $return = '';
       foreach($input as $iv)
       {
+        if($iv === null)
+        {
+          continue;
+        }
         $return .= $arrayGlue . static::escape($iv, $arrayGlue)->getContent();
       }
       return new static(substr($return, strlen($arrayGlue)));
