@@ -97,7 +97,9 @@ class SafeHtml implements ISafeHtmlProducer
     }
     catch(Exception $ex)
     {
-      throw new Exception("Object (of class '" . get_class($input) . "') cannot be converted to SafeHtml.");
+      throw new Exception(
+        "Object (of class '" . ($input ? get_class($input) : 'null') . "') cannot be converted to SafeHtml."
+      );
     }
   }
 }
